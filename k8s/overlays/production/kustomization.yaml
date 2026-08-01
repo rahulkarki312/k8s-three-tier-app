@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Inherit everything from base
+resources:
+  - ../../base
+
+# Add a prefix to all created resource names in prod
+namePrefix: prod-
+
+commonLabels:
+  environment: production

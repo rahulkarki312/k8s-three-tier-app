@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # 1. Namespace & Configurations
+  - namespace.yaml
+  - configmaps/app-config.yaml
+  - secrets/db-secrets.yaml
+
+  # 2. Storage
+  - pvc/postgres-pvc.yaml
+
+  # 3. Database Tier
+  - postgres/statefulset.yaml
+  - postgres/service.yaml
+
+  # 4. Backend API Tier
+  - backend/deployment.yaml
+  - backend/service.yaml
+
+  # 5. Frontend Web Tier
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+
+  # 6. Cert Manager (SSL)
+  - cert-manager/cluster-issuer.yaml
+  - cert-manager/certificate.yaml
+
+  # 7. Network Policies & Security
+  - network-policies/default-deny.yaml
+  - network-policies/backend-to-postgres.yaml
+  - network-policies/frontend-to-backend.yaml
+  - network-policies/traefik-to-frontend.yaml
+
+  # 8. Ingress & Routing
+  - ingress/rate-limit.yaml
+  - ingress/redirect-middleware.yaml
+  - ingress/security-headers.yaml
+  - ingress/ingress.yaml
