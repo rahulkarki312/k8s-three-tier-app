@@ -1,0 +1,17 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+  namespace: three-tier-app
+spec:
+  headers:
+    customFrameOptionsValue: DENY              # Prevent clickjacking
+    contentTypeNosniff: true                   # Prevent MIME sniffing
+    browserXssFilter: true                     # Enable XSS filter
+    customRequestHeaders:
+      X-Forwarded-Proto: https                 # Tell backend it's HTTPS
+    sslRedirect: true                          # Force HTTPS
+    stsSeconds: 31536000                       # HSTS 1 year
+    stsIncludeSubdomains: true                 # HSTS for subdomains
+    stsPreload: true                           # HSTS preload list
+    forceSTSHeader: true

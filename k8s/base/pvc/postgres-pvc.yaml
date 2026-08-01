@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc          # Unique name for this claim
+  namespace: three-tier-app   # Must match namespace
+  labels:
+    app: postgres             # Label for resource identification
+    tier: database            # Indicates this belongs to DB tier
+spec:
+  accessModes:
+    - ReadWriteOnce           # Can be mounted by single node as read-write
+  resources:
+    requests:
+      storage: 10Gi           # Request 10GB from storage class
+  storageClassName: local-path # K3s built-in storage provisioner

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: three-tier-app
+  labels:
+    app: three-tier-app
+    component: configuration
+data:
+  # Backend Configuration
+  NODE_ENV: "production"
+  PORT: "3000"
+  DB_HOST: "postgres-svc"
+  DB_PORT: "5432"
+  DB_NAME: "appdb"
+  FRONTEND_URL: "http://frontend-svc:3001"
+  
+  # Frontend Configuration
+  FRONTEND_PORT: "3001"
+  API_URL: "http://backend-svc:3000"
+  
+  # PostgreSQL Configuration
+  POSTGRES_DB: "appdb"

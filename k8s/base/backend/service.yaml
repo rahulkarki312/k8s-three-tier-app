@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc                     # DNS: backend-svc.three-tier-app.svc.cluster.local
+  namespace: three-tier-app
+  labels:
+    app: backend
+    tier: api
+spec:
+  type: ClusterIP                       # Internal-only access (default, most secure)
+  ports:
+    - port: 3000                        # Service port (what other services use)
+      targetPort: 3000                  # Container port (where app listens)
+      protocol: TCP
+      name: http                        # Named port for clarity
+  selector:
+    app: backend                        # Routes to pods with label app=backend

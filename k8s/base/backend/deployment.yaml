@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: three-tier-app
+  labels:
+    app: backend
+    tier: api
+spec:
+  replicas: 2                           # Two instances for high availability
+  strategy:
+    type: RollingUpdate                 # Zero-downtime updates
+    rollingUpdate:
+      maxUnavailable: 1                 # Allow 1 pod down during update
+      maxSurge: 1                       # Allow 1 extra pod during update
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend                    # Must match selector and service
+        tier: api
+    spec:
+      containers:
+        - name: backend
+          image: three-tier-backend:latest  #  built image
+          imagePullPolicy: IfNotPresent     # Use local Docker image if available
+          ports:
+            - containerPort: 3000           # Port Express.js listens on
+              name: http
+          envFrom:                           # Load all env vars from ConfigMap
+            - configMapRef:
+                name: app-config
+            - secretRef:                     # Load sensitive vars from Secret
+                name: db-secrets
+          resources:
+            requests:
+              memory: "128Mi"                # Minimum memory (0.125 GB)
+              cpu: "100m"                    # Minimum CPU (0.1 core)
+            limits:
+              memory: "256Mi"                # Max memory before OOM kill
+              cpu: "500m"                    # Max CPU before throttling
+          livenessProbe:                     # Is app alive? Restart if fails
+            httpGet:
+              path: /healthz                #  health check endpoint
+              port: 3000
+            initialDelaySeconds: 15          # Wait for app to start
+            periodSeconds: 20                # Check every 20 seconds
+            timeoutSeconds: 5                # 5 seconds to respond
+            failureThreshold: 3              # Fail 3 times before restart
+          readinessProbe:                    # Is app ready to serve traffic?
+            httpGet:
+              path: /ready                  # Your readiness endpoint
+              port: 3000
+            initialDelaySeconds: 5           # Start checking quickly
+            periodSeconds: 10               # Check every 10 seconds
+            timeoutSeconds: 3
+            successThreshold: 1             # Need 1 success to mark ready
+            failureThreshold: 3             # Fail 3 times to mark not ready
+          securityContext:                   # Security hardening
+            runAsNonRoot: true              # Cannot run as root
+            runAsUser: 1001                 # Specific non-root user ID
+            allowPrivilegeEscalation: false # Cannot get more privileges
+            capabilities:
+              drop:
+                - ALL                        # Remove all Linux capabilities
+            readOnlyRootFilesystem: false    # Need to write logs/tmp (better: true with ephemeral)

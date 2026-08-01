@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres              # Pod will be named postgres-0
+  namespace: three-tier-app
+  labels:
+    app: postgres
+    tier: database
+spec:
+  serviceName: postgres-svc   # Links to headless service (critical for StatefulSet)
+  replicas: 1                 # Single instance database
+  podManagementPolicy: OrderedReady  # Start/stop pods in order (0,1,2...)
+  updateStrategy:
+    type: RollingUpdate       # Update pods one by one
+  selector:
+    matchLabels:
+      app: postgres           # Must match template labels
+  template:
+    metadata:
+      labels:
+        app: postgres         # Labels applied to pods
+        tier: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17.5-alpine3.21  
+          imagePullPolicy: IfNotPresent     # Use local cache if available
+          ports:
+            - containerPort: 5432           # Port app listens on
+              name: postgres                # Named port for service reference
+          envFrom:
+            - configMapRef:
+                name: app-config            # Loads DB_NAME, DB_HOST etc
+            - secretRef:
+                name: db-secrets            # Loads DB_USER, DB_PASSWORD
+          volumeMounts:
+            - name: postgres-data           # Must match volumeClaimTemplates name
+              mountPath: /var/lib/postgresql/data  # PostgreSQL data directory
+              subPath: pgdata               # Avoids lost+found issues
+          resources:
+            requests:
+              memory: "256Mi"               # Minimum guaranteed memory
+              cpu: "250m"                   # Minimum guaranteed CPU (0.25 cores)
+            limits:
+              memory: "512Mi"               # Maximum memory allowed
+              cpu: "500m"                   # Maximum CPU allowed (0.5 cores)
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - appuser
+                - -d
+                - appdb
+            initialDelaySeconds: 30         # Wait 30s before first check
+            periodSeconds: 10               # Check every 10 seconds
+            timeoutSeconds: 5               # Mark as failed after 5s timeout
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - appuser
+                - -d
+                - appdb
+            initialDelaySeconds: 5          # Start checking quickly
+            periodSeconds: 5                # Check more frequently for readiness
+            timeoutSeconds: 3
+      restartPolicy: Always
+  volumeClaimTemplates:                     # Creates PVC for each pod
+    - metadata:
+        name: postgres-data                 # Name referenced in volumeMounts
+        labels:
+          app: postgres
+      spec:
+        accessModes:
+          - ReadWriteOnce                   # Exclusive read-write access
+        storageClassName: local-path        # Same storage class as PVC
+        resources:
+          requests:
+            storage: 10Gi                   # 10GB per pod

@@ -1,0 +1,9 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: rate-limit
+  namespace: three-tier-app
+spec:
+  rateLimit:
+    average: 100                              # 100 requests per second
+    burst: 50                                 # Allow bursts of 50
