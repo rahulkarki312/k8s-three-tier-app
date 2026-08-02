@@ -26,6 +26,9 @@ spec:
         - name: frontend
           image: rahulkarki312/three-tier-frontend:1.0  # built frontend image
           imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "3001"   # <-- Explicitly overrides PORT="3000" from app-config
           ports:
             - containerPort: 3001
               name: http
