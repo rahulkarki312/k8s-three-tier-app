@@ -31,6 +31,8 @@ resources:
   - network-policies/backend-to-postgres.yaml
   - network-policies/frontend-to-backend.yaml
   - network-policies/traefik-to-frontend.yaml
+  - network-policies/allow-backend-egress.yaml
+  - network-policies/allow-frontend-egress.yaml
 
   # 8. Ingress & Routing
   - ingress/rate-limit.yaml
