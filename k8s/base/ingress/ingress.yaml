@@ -6,31 +6,27 @@ metadata:
   labels:
     app: three-tier-app
   annotations:
+    # for local dev (HTTP testing)
     traefik.ingress.kubernetes.io/router.middlewares: |
-      three-tier-app-redirect-https@kubernetescrd,
       three-tier-app-security-headers@kubernetescrd,
       three-tier-app-rate-limit@kubernetescrd
-    cert-manager.io/cluster-issuer: letsencrypt-prod    # Auto-provision TLS via cert-manager
 spec:
-  tls:                                # TLS section 
-    - hosts:
-        - three-tier-app.example.com  #  domain
-      secretName: tls-secret         # Where cert-manager stores the certificate
   rules:
-    - host: three-tier-app.local    # Our domain (use nip.io for testing: 192.168.1.100.nip.io)
+    # Magic DNS domain resolving directly to VPS IP
+    - host: 192.168.56.114.nip.io
       http:
         paths:
-          - path: /api              # API routes go to backend
-            pathType: Prefix        # Match /api, /api/messages, /api/*
+          - path: /api
+            pathType: Prefix
             backend:
               service:
-                name: backend-svc   # Routes to backend service
+                name: backend-svc   # Kustomize will transform this to dev-backend-svc
                 port:
                   number: 3000
-          - path: /                 # Everything else goes to frontend
-            pathType: Prefix        # Match /, /style.css, /script.js
+          - path: /
+            pathType: Prefix
             backend:
               service:
-                name: frontend-svc  # Routes to frontend service
+                name: frontend-svc  # Kustomize will transform this to dev-frontend-svc
                 port:
                   number: 3001
