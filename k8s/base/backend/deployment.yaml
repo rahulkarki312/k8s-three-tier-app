@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: rahulkarki312/three-tier-backend:1.0     #  built image
+          image: rahulkarki312/three-tier-backend:1.1     #  built image
           imagePullPolicy: IfNotPresent     # Use local Docker image if available
           ports:
             - containerPort: 3000           # Port Express.js listens on
