@@ -10,13 +10,11 @@ spec:
   policyTypes:
     - Ingress
   ingress:
+    # Allow incoming TCP traffic on port 3001 from the kube-system namespace
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: kube-system  # Traefik runs here
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: traefik          # Traefik pods label
+              kubernetes.io/metadata.name: kube-system
       ports:
         - port: 3001
           protocol: TCP
