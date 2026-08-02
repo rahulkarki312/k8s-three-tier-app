@@ -10,7 +10,8 @@ data:
   # Backend Configuration
   NODE_ENV: "production"
   PORT: "3000"
-  DB_HOST: "dev-postgres-svc"
+  # DB_HOST: "dev-postgres-svc"
+  DB_HOST: "dev-postgres-svc.three-tier-app.svc.cluster.local"
   DB_PORT: "5432"
   DB_NAME: "appdb"
   FRONTEND_URL: "http://dev-frontend-svc:3001"
