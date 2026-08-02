@@ -5,11 +5,11 @@ metadata:
   namespace: three-tier-app
   labels:
     app: three-tier-app
-  annotations:
-    # for local dev (HTTP testing)
-    traefik.ingress.kubernetes.io/router.middlewares: |
-      three-tier-app-security-headers@kubernetescrd,
-      three-tier-app-rate-limit@kubernetescrd
+  # annotations:
+  #   # for local dev (HTTP testing)
+  #   traefik.ingress.kubernetes.io/router.middlewares: |
+  #     three-tier-app-security-headers@kubernetescrd,
+  #     three-tier-app-rate-limit@kubernetescrd
 spec:
   rules:
     # Magic DNS domain resolving directly to VPS IP
