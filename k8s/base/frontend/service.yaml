@@ -10,7 +10,7 @@ spec:
   type: ClusterIP                    # Internal only, accessed via Ingress
   ports:
     - port: 3001                     # Service port
-      targetPort: 3000               # Container port
+      targetPort: 3001               # Container port
       protocol: TCP
       name: http
   selector:
