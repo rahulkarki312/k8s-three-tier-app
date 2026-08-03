@@ -33,6 +33,7 @@ resources:
   - network-policies/traefik-to-frontend.yaml
   - network-policies/allow-backend-egress.yaml
   - network-policies/allow-frontend-egress.yaml
+  - network-policies/allow-traefik-to-backend.yaml
 
   # 8. Ingress & Routing
   - ingress/rate-limit.yaml
