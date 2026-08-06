@@ -1,5 +1,9 @@
 pipeline {
     agent any
+
+    tools {
+        nodejs 'NodeJS 18'  
+    }
     
     environment {
         // Registry configuration
