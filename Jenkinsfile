@@ -226,13 +226,13 @@ def commitAndPushManifests() {
         usernameVariable: 'GIT_USER',
         passwordVariable: 'GIT_PASSWORD'
     )]) {
-        sh '''
+        sh """
             # Configure Git identity
             git config user.email "jenkins@ci.local"
             git config user.name "Jenkins CI"
 
             # Checkout the branch explicitly 
-            git checkout '"${GIT_BRANCH}"' || git checkout -b '"${GIT_BRANCH}"'
+            git checkout ${GIT_BRANCH} || git checkout -b ${GIT_BRANCH}
 
             # Configure remote with credentials for push
             git remote set-url origin https://${GIT_USER}:${GIT_PASSWORD}@github.com/${GIT_USER}/three-tier-app.git
@@ -248,6 +248,6 @@ def commitAndPushManifests() {
                 git push origin ${GIT_BRANCH}
                 echo "Manifest changes committed and pushed"
             fi
-        '''
+        """
     }
 }
