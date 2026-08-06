@@ -165,7 +165,7 @@ pipeline {
 
 
 /**
- * Authenticates with container registry using Docker Hub credentials
+ * Authenticates with container registry using Docker-Hub credentials
  * Credential ID: dockerhub-credentials
  */
 def dockerLogin() {
