@@ -232,11 +232,9 @@ def commitAndPushManifests() {
             git config user.name "Jenkins CI"
 
             # Checkout the branch explicitly 
-            git checkout ${GIT_BRANCH} || git checkout -b ${GIT_BRANCH}
+            git checkout -B ${GIT_BRANCH}
 
-            # Configure remote with credentials for push
-            git remote set-url origin https://${GIT_USER}:${GIT_PASSWORD}@github.com/${GIT_USER}/three-tier-app.git
-
+           
             # Stage only the modified deployment files
             git add k8s/base/backend/deployment.yaml k8s/base/frontend/deployment.yaml
 
