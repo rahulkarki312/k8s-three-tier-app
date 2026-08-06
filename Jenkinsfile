@@ -8,7 +8,7 @@ pipeline {
     environment {
         // Registry configuration
         REGISTRY = 'docker.io'
-        REGISTRY_USER = 'rahulkarki1'
+        REGISTRY_USER = 'rahulkarki312'
         BACKEND_IMAGE = "${REGISTRY_USER}/three-tier-backend"
         FRONTEND_IMAGE = "${REGISTRY_USER}/three-tier-frontend"
         
