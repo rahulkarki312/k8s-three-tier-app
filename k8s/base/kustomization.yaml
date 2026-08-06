@@ -22,10 +22,6 @@ resources:
   - frontend/deployment.yaml
   - frontend/service.yaml
 
-  # 6. Cert Manager (SSL)
-  - cert-manager/cluster-issuer.yaml
-  - cert-manager/certificate.yaml
-
   # 7. Network Policies & Security
   - network-policies/default-deny.yaml
   - network-policies/backend-to-postgres.yaml
@@ -37,6 +33,5 @@ resources:
 
   # 8. Ingress & Routing
   - ingress/rate-limit.yaml
-  - ingress/redirect-middleware.yaml
   - ingress/security-headers.yaml
   - ingress/ingress.yaml

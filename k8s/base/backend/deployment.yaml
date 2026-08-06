@@ -51,7 +51,7 @@ spec:
             failureThreshold: 3              # Fail 3 times before restart
           readinessProbe:                    # Is app ready to serve traffic?
             httpGet:
-              path: /ready                  # Your readiness endpoint
+              path: /ready                  #  readiness endpoint
               port: 3000
             initialDelaySeconds: 5           # Start checking quickly
             periodSeconds: 10               # Check every 10 seconds
