@@ -50,7 +50,7 @@ pipeline {
                     steps {
                         dir('backend') {
                             sh """
-                                docker build \
+                                podman build \
                                     --tag ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} \
                                     --tag ${BACKEND_IMAGE}:${LATEST_TAG} \
                                     --file Dockerfile \
@@ -65,7 +65,7 @@ pipeline {
                     steps {
                         dir('frontend') {
                             sh """
-                                docker build \
+                                podman build \
                                     --tag ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} \
                                     --tag ${FRONTEND_IMAGE}:${LATEST_TAG} \
                                     --file Dockerfile \
@@ -149,10 +149,10 @@ pipeline {
 
         always {
             // Cleanup local images to save disk space
-            sh "docker rmi ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
-            sh "docker rmi ${BACKEND_IMAGE}:${LATEST_TAG} || true"
-            sh "docker rmi ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
-            sh "docker rmi ${FRONTEND_IMAGE}:${LATEST_TAG} || true"
+            sh "podman rmi ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
+            sh "podman rmi ${BACKEND_IMAGE}:${LATEST_TAG} || true"
+            sh "podman rmi ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
+            sh "podman rmi ${FRONTEND_IMAGE}:${LATEST_TAG} || true"
 
             // Clean workspace for next build
             cleanWs()
