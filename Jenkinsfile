@@ -50,7 +50,7 @@ pipeline {
                     steps {
                         dir('backend') {
                             sh """
-                                podman build \
+                                docker build \
                                     --tag ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} \
                                     --tag ${BACKEND_IMAGE}:${LATEST_TAG} \
                                     --file Dockerfile \
@@ -65,7 +65,7 @@ pipeline {
                     steps {
                         dir('frontend') {
                             sh """
-                                podman build \
+                                docker build \
                                     --tag ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} \
                                     --tag ${FRONTEND_IMAGE}:${LATEST_TAG} \
                                     --file Dockerfile \
@@ -149,10 +149,10 @@ pipeline {
 
         always {
             // Cleanup local images to save disk space
-            sh "podman rmi ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
-            sh "podman rmi ${BACKEND_IMAGE}:${LATEST_TAG} || true"
-            sh "podman rmi ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
-            sh "podman rmi ${FRONTEND_IMAGE}:${LATEST_TAG} || true"
+            sh "docker rmi ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
+            sh "docker rmi ${BACKEND_IMAGE}:${LATEST_TAG} || true"
+            sh "docker rmi ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
+            sh "docker rmi ${FRONTEND_IMAGE}:${LATEST_TAG} || true"
 
             // Clean workspace for next build
             cleanWs()
@@ -191,7 +191,7 @@ def pushImage(String imageName, String tag) {
     retry(3) {
         sh """
             echo "Pushing ${imageName}:${tag}..."
-            podman push ${imageName}:${tag}
+            docker push ${imageName}:${tag}
             echo "Successfully pushed ${imageName}:${tag}"
         """
     }
