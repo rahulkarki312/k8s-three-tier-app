@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Registry configuration
         REGISTRY = 'docker.io'
-        REGISTRY_USER = 'rahulkarki312'
+        REGISTRY_USER = 'rahulkarki1'
         BACKEND_IMAGE = "${REGISTRY_USER}/three-tier-backend"
         FRONTEND_IMAGE = "${REGISTRY_USER}/three-tier-frontend"
         
@@ -83,7 +83,7 @@ pipeline {
                     steps {
                         dir('backend') {
                             sh """
-                                podman build \
+                                docker build \
                                     --tag ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} \
                                     --tag ${BACKEND_IMAGE}:${LATEST_TAG} \
                                     --file Dockerfile \
@@ -97,7 +97,7 @@ pipeline {
                     steps {
                         dir('frontend') {
                             sh """
-                                podman build \
+                                docker build \
                                     --tag ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} \
                                     --tag ${FRONTEND_IMAGE}:${LATEST_TAG} \
                                     --file Dockerfile \
@@ -183,10 +183,10 @@ pipeline {
         
         always {
             // Cleanup local images to save disk space
-            sh "podman rmi ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
-            sh "podman rmi ${BACKEND_IMAGE}:${LATEST_TAG} || true"
-            sh "podman rmi ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
-            sh "podman rmi ${FRONTEND_IMAGE}:${LATEST_TAG} || true"
+            sh "docker rmi ${BACKEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
+            sh "docker rmi ${BACKEND_IMAGE}:${LATEST_TAG} || true"
+            sh "docker rmi ${FRONTEND_IMAGE}:${BUILD_NUMBER_TAG} || true"
+            sh "docker rmi ${FRONTEND_IMAGE}:${LATEST_TAG} || true"
             
             // Clean workspace for next build
             cleanWs()
@@ -194,27 +194,32 @@ pipeline {
     }
 }
 
-
+// ============================================
 // Helper Functions
-
+// ============================================
 
 /**
- * Authenticates with container registry
+ * Authenticates with container registry using Docker Hub credentials
+ * Credential ID: dockerhub-credentials
  */
- 
 def dockerLogin() {
-    withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')]) {
+    withCredentials([usernamePassword(
+        credentialsId: 'dockerhub-credentials',
+        usernameVariable: 'DOCKER_USER',
+        passwordVariable: 'DOCKER_PASSWORD'
+    )]) {
         sh """
-            echo "${DOCKER_PASSWORD}" | podman login ${REGISTRY} \
-                --username ${REGISTRY_USER} \
+            echo "${DOCKER_PASSWORD}" | docker login ${REGISTRY} \
+                --username ${DOCKER_USER} \
                 --password-stdin
         """
-        echo "Logged into registry: ${REGISTRY}"
+        echo "Logged into registry: ${REGISTRY} as ${DOCKER_USER}"
     }
 }
 
 /**
  * Pushes a container image to registry with retry logic
+ * Retries up to 3 times on failure
  */
 def pushImage(String imageName, String tag) {
     retry(3) {
@@ -228,6 +233,7 @@ def pushImage(String imageName, String tag) {
 
 /**
  * Updates image tag in Kubernetes deployment manifest
+ * Uses sed to replace old image tag with new build-specific tag
  */
 def updateManifestImage(String filePath, String newImage) {
     // Extract base image name without tag
@@ -245,13 +251,22 @@ def updateManifestImage(String filePath, String newImage) {
 }
 
 /**
- * Commits manifest changes and pushes to Git
+ * Commits manifest changes and pushes to Git repository
+ * Credential ID: github-credentials
  */
 def commitAndPushManifests() {
-    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+    withCredentials([usernamePassword(
+        credentialsId: 'github-credentials',
+        usernameVariable: 'GIT_USER',
+        passwordVariable: 'GIT_PASSWORD'
+    )]) {
         sh """
+            # Configure Git identity
             git config user.email "jenkins@ci.local"
             git config user.name "Jenkins CI"
+            
+            # Configure remote with credentials for push
+            git remote set-url origin https://${GIT_USER}:${GIT_PASSWORD}@github.com/${GIT_USER}/three-tier-app.git
             
             # Stage only the modified deployment files
             git add k8s/base/backend/deployment.yaml k8s/base/frontend/deployment.yaml
