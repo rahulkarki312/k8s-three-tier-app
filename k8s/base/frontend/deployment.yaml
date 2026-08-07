@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: rahulkarki312/three-tier-frontend:1.0  # built frontend image
+          image: rahulkarki312/three-tier-frontend:11
           imagePullPolicy: IfNotPresent
           env:
             - name: PORT
