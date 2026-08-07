@@ -9,7 +9,7 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/rahulkarki312/three-tier-app.git
+    repoURL: https://github.com/rahulkarki312/k8s-three-tier-app.git
     targetRevision: main
     path: k8s/overlays/development
     
